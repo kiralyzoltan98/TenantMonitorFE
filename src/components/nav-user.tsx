@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { Button } from "./ui/button"
-import { Link, redirect } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 
 export function NavUser({
     user,
@@ -26,10 +26,10 @@ export function NavUser({
     }
 }) {
     const { isMobile } = useSidebar()
-
+    const navigate = useNavigate()
     function HandleLogout(): void {
         localStorage.removeItem("token")
-        window.location = "/"
+        navigate({ to: "/" })
     }
 
     return (
