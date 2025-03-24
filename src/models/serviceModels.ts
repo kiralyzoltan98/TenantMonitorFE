@@ -1,3 +1,5 @@
+import { User } from "./dataModels";
+
 export interface AuthService {
   login(config: {
     email?: string;
@@ -12,4 +14,8 @@ export interface AuthService {
     lastName?: string;
   }): Promise<void>;
   forgotPassword(config: { email: string }): Promise<void>;
+}
+
+export interface UserService {
+  getUserInfo(): Promise<User>
 }

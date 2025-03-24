@@ -15,22 +15,49 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { Button } from "./ui/button"
 import { useNavigate } from "@tanstack/react-router"
+import { User } from "@/models/dataModels"
+import { useEffect, useState } from "react"
+import { Skeleton } from "./ui/skeleton"
 
-export function NavUser({
-    user,
-}: {
-    user: {
-        name: string
-        email: string
-        avatar: string
-    }
-}) {
+interface NavUserProps {
+    user: User
+    isSuccess: boolean
+}
+
+function SkeletonUser() {
+    return (
+        <div className='flex items-center space-x-4'>
+            <Skeleton className='h-12 w-12 rounded-full' />
+            <div className='space-y-2'>
+                <Skeleton className='h-4 w-[220px]' />
+                <Skeleton className='h-4 w-[200px]' />
+            </div>
+        </div>
+    )
+}
+
+export function NavUser({ user, isSuccess }: NavUserProps) {
     const { isMobile } = useSidebar()
+
+    const [monogram, setMonogram] = useState<string>()
+
     const navigate = useNavigate()
     function HandleLogout(): void {
         localStorage.removeItem("accessToken")
         localStorage.removeItem("refreshToken")
         navigate({ to: "/" })
+    }
+
+    useEffect(() => {
+        if (user) setMonogram(user.lastName.charAt(0) + user.firstName.charAt(0))
+    }, [user])
+
+    useEffect(() => {
+        console.log(isSuccess)
+    }, [isSuccess])
+
+    if (isSuccess !== true || !user) {
+        return SkeletonUser()
     }
 
     return (
@@ -43,11 +70,11 @@ export function NavUser({
                             className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                         >
                             <Avatar className='h-8 w-8 rounded-lg'>
-                                <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                                <AvatarImage alt={user.userName} />
+                                <AvatarFallback className='rounded-lg'>{monogram}</AvatarFallback>
                             </Avatar>
                             <div className='grid flex-1 text-left text-sm leading-tight'>
-                                <span className='truncate font-medium'>{user.name}</span>
+                                <span className='truncate font-medium'>{user.userName}</span>
                                 <span className='truncate text-xs'>{user.email}</span>
                             </div>
                             <ChevronsUpDown className='ml-auto size-4' />
@@ -62,11 +89,11 @@ export function NavUser({
                         <DropdownMenuLabel className='p-0 font-normal'>
                             <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                                 <Avatar className='h-8 w-8 rounded-lg'>
-                                    <AvatarImage src={user.avatar} alt={user.name} />
-                                    <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                                    <AvatarImage alt={user.userName} />
+                                    <AvatarFallback className='rounded-lg'>{monogram}</AvatarFallback>
                                 </Avatar>
                                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                                    <span className='truncate font-medium'>{user.name}</span>
+                                    <span className='truncate font-medium'>{user.userName}</span>
                                     <span className='truncate text-xs'>{user.email}</span>
                                 </div>
                             </div>

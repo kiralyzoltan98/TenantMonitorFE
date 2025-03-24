@@ -1,28 +1,24 @@
 import * as React from "react"
-import { BookOpen, Bot, Map, Settings2, SquareTerminal } from "lucide-react"
+import { BookOpen, Bot, House, Map, Settings2 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
+import { useGetUserInfoQuery } from "@/hooks/useGetUserInfoQuery"
 
 // This is sample data.
 const data = {
-    user: {
-        name: "admin",
-        email: "admin@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
     navMain: [
         {
-            title: "Playground",
-            url: "#",
-            icon: SquareTerminal,
+            title: "Properties",
+            url: "properties",
+            icon: House,
             isActive: true,
             items: [
                 {
-                    title: "History",
-                    url: "#",
+                    title: "Property",
+                    url: "properties",
                 },
             ],
         },
@@ -70,6 +66,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { data: userInfo, isSuccess } = useGetUserInfoQuery()
+
     return (
         <Sidebar collapsible='icon' {...props}>
             <SidebarHeader>
@@ -80,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={userInfo} isSuccess={isSuccess} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
