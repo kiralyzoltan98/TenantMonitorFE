@@ -28,7 +28,8 @@ export function NavUser({
     const { isMobile } = useSidebar()
     const navigate = useNavigate()
     function HandleLogout(): void {
-        localStorage.removeItem("token")
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("refreshToken")
         navigate({ to: "/" })
     }
 

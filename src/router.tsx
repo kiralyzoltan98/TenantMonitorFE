@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "./comp
 import { AppSidebar } from "./components/app-sidebar"
 
 function isAuthenticated() {
-    return Boolean(localStorage.getItem("token"))
+    return Boolean(localStorage.getItem("refreshToken"))
 }
 
 function authGuard() {
