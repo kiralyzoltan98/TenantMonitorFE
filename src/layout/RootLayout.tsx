@@ -19,7 +19,6 @@ export default function RootLayout() {
         const currentRefreshToken = refreshToken // Capture current refresh token
 
         if (!currentRefreshToken) {
-            console.log("No refresh token found, cannot refresh.")
             removeAuthTokens()
             navigate({ to: "/login", replace: true }) // Redirect to login
             return Promise.reject(new Error("No refresh token"))
@@ -27,11 +26,9 @@ export default function RootLayout() {
 
         // If a refresh is already in progress, return the existing promise
         if (refreshTokenPromise.current) {
-            console.log("Refresh already in progress, waiting...")
             return refreshTokenPromise.current
         }
 
-        console.log("Attempting to refresh token...")
         refreshTokenPromise.current = (async () => {
             try {
                 const refreshUrl = `${API_BASE_URL}/v1/refresh/${currentRefreshToken}`
@@ -51,7 +48,6 @@ export default function RootLayout() {
                 if (!data.accessToken) {
                     throw new Error("Refresh response did not contain accessToken")
                 }
-                console.log("Token refreshed successfully.")
                 setAccessToken(data.accessToken)
                 return data.accessToken // Resolve with the new access token
             } catch (error) {
@@ -64,7 +60,6 @@ export default function RootLayout() {
             } finally {
                 // Clear the promise ref once the refresh attempt is complete
                 refreshTokenPromise.current = null
-                console.log("Refresh attempt finished.")
             }
         })()
 
@@ -78,7 +73,7 @@ export default function RootLayout() {
                 defaultOptions: {
                     queries: {
                         staleTime: 30 * 1000, // 30 seconds
-                        refetchOnWindowFocus: false, // Optional: disable refetch on focus during debugging
+                        refetchOnWindowFocus: false,
                         retry: (failureCount, error) => {
                             // Use instanceof if using custom error class
                             const apiError = error instanceof ApiError ? error : null
@@ -87,18 +82,11 @@ export default function RootLayout() {
                             // Don't retry on 401/400 using Tanstack Query's mechanism,
                             // because we will handle it manually after refresh attempt.
                             if (status === 400 || status === 401) {
-                                console.log(`Tanstack retry: Denying retry for status ${status} (handled by onError)`)
                                 return false
                             }
 
                             // Standard retry logic for other errors
                             const shouldRetry = failureCount < 2
-                            console.log(
-                                `Tanstack retry: ${shouldRetry ? "Allowing" : "Denying"} retry #${
-                                    failureCount + 1
-                                } for error:`,
-                                error
-                            )
                             return shouldRetry
                         },
                         // Important: Tell queries to use the latest access token
@@ -114,40 +102,18 @@ export default function RootLayout() {
                         const apiError = error instanceof ApiError ? error : null
                         const status = apiError?.status ?? (error as any)?.status // Fallback check
 
-                        console.log(
-                            `QueryCache onError: Detected error for query [${query.queryKey.join(
-                                ", "
-                            )}] with status ${status}`,
-                            error
-                        )
-
                         if (status === 400 || status === 401) {
                             // Check if this query was already retried after a refresh attempt
                             // This meta flag prevents infinite loops if refresh works but the request *still* fails with 401
                             if (query.state.meta?.isRetrying) {
-                                console.log(
-                                    `QueryCache onError: Query [${query.queryKey.join(
-                                        ", "
-                                    )}] failed even after retry. Logging out.`
-                                )
                                 removeAuthTokens()
                                 navigate({ to: "/login", replace: true })
                                 toast.error("Authentication failed. Please log in again.")
                                 return // Stop processing
                             }
 
-                            console.log(
-                                `QueryCache onError: Status ${status} detected for query [${query.queryKey.join(
-                                    ", "
-                                )}]. Attempting token refresh.`
-                            )
                             try {
                                 await refreshAuthToken() // Wait for the refresh attempt
-                                console.log(
-                                    `QueryCache onError: Token refresh successful. Invalidating query [${query.queryKey.join(
-                                        ", "
-                                    )}] to trigger refetch.`
-                                )
 
                                 // Instead of directly retrying here (which is complex from QueryCache),
                                 // invalidate the specific query. If the component using it is still mounted,
