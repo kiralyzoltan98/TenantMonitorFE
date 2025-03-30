@@ -1,9 +1,9 @@
 import { createRootRoute, createRoute, createRouter, Outlet, redirect } from "@tanstack/react-router"
-import { PageContainer } from "./pages/PageContainer"
 import LoginPage from "./pages/LoginPage"
 import Nav from "./components/Nav"
 import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"
 import { AppSidebar } from "./components/app-sidebar"
+import RootLayout from "./layout/RootLayout"
 
 function isAuthenticated() {
     return Boolean(localStorage.getItem("refreshToken"))
@@ -22,13 +22,7 @@ declare module "@tanstack/react-router" {
 }
 
 export const rootRoute = createRootRoute({
-    component: () => (
-        <>
-            <PageContainer className='flex flex-col min-h-screen'>
-                <Outlet />
-            </PageContainer>
-        </>
-    ),
+    component: () => <RootLayout />,
     notFoundComponent: () => {
         return <p>404 page not found :c</p>
     },

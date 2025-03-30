@@ -18,6 +18,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { User } from "@/models/dataModels"
 import { useEffect, useState } from "react"
 import { Skeleton } from "./ui/skeleton"
+import useTokens from "@/hooks/useTokens"
 
 interface NavUserProps {
     user: User
@@ -38,23 +39,19 @@ function SkeletonUser() {
 
 export function NavUser({ user, isSuccess }: NavUserProps) {
     const { isMobile } = useSidebar()
+    const { removeAuthTokens } = useTokens()
 
     const [monogram, setMonogram] = useState<string>()
 
     const navigate = useNavigate()
     function HandleLogout(): void {
-        localStorage.removeItem("accessToken")
-        localStorage.removeItem("refreshToken")
+        removeAuthTokens()
         navigate({ to: "/" })
     }
 
     useEffect(() => {
         if (user) setMonogram(user.lastName.charAt(0) + user.firstName.charAt(0))
     }, [user])
-
-    useEffect(() => {
-        console.log(isSuccess)
-    }, [isSuccess])
 
     if (isSuccess !== true || !user) {
         return SkeletonUser()

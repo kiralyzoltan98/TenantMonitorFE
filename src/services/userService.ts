@@ -1,6 +1,7 @@
 import { API_BASE_URL } from "@/config";
+import { ApiError } from "@/error/ApiError";
 import { UserService } from "@/models/serviceModels";
-import getAccessToken from "@/utils/util";
+import { getAccessToken } from "@/utils/util";
 
 export const userService: UserService = {
   async getUserInfo() {
@@ -14,7 +15,16 @@ export const userService: UserService = {
         };
         const res = await fetch(url, fetchConfig);
         if (!res.ok) {
-          throw new Error("Login failed.");
+          let errorMessage = `Request failed with status ${res.status}`;
+          try {
+              const errorBody = await res.json();
+              errorMessage = errorBody.message || errorMessage; // Or use a specific field from your error response
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (e) {
+              // Ignore if response body is not JSON or empty
+          }
+          // Throw the custom error
+          throw new ApiError(errorMessage, res.status, res);
         }
         const data = await res.json();
     

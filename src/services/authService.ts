@@ -1,5 +1,6 @@
 import { AuthService } from "@/models/serviceModels";
 import { API_BASE_URL } from "../config";
+import { setAccessToken, setRefreshToken } from "@/utils/util";
 
 export const authService: AuthService = {
   async login(config) {
@@ -27,8 +28,8 @@ export const authService: AuthService = {
       throw new Error("missing token");
     }
 
-    localStorage.setItem("accessToken", accessToken)
-    localStorage.setItem("refreshToken", refreshToken)
+    setAccessToken(accessToken);
+    setRefreshToken(refreshToken);
     return true;
   },
   async register(config) {
