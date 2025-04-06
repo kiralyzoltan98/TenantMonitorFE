@@ -38,6 +38,8 @@ export const authService: AuthService = {
       email: config.email,
       userName: config.userName,
       password: config.password,
+      firstName: config.firstName,
+      lastName: config.lastName,
     };
     const headers = new Headers();
     headers.append("Content-Type", "application/json");

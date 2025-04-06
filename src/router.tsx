@@ -4,6 +4,7 @@ import Nav from "./components/Nav"
 import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"
 import { AppSidebar } from "./components/app-sidebar"
 import RootLayout from "./layout/RootLayout"
+import RegisterPage from "./pages/RegisterPage"
 
 function isAuthenticated() {
     return Boolean(localStorage.getItem("refreshToken"))
@@ -64,7 +65,7 @@ const registerRoute = createRoute({
     path: "register",
     component: () => (
         <>
-            <h1>Register</h1>
+            <RegisterPage />
         </>
     ),
 })
