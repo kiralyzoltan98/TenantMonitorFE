@@ -5,6 +5,7 @@ import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "./comp
 import { AppSidebar } from "./components/app-sidebar"
 import RootLayout from "./layout/RootLayout"
 import RegisterPage from "./pages/RegisterPage"
+import LandingPage from "./pages/LandingPage"
 
 function isAuthenticated() {
     return Boolean(localStorage.getItem("refreshToken"))
@@ -42,12 +43,7 @@ const guestRoute = createRoute({
 const homeRoute = createRoute({
     getParentRoute: () => guestRoute,
     path: "/",
-    component: () => (
-        <>
-            <h1>home</h1>
-            <Nav />
-        </>
-    ),
+    component: () => <LandingPage />,
 })
 
 const loginRoute = createRoute({
@@ -91,11 +87,44 @@ const dashboardRoute = createRoute({
     ),
 })
 
+const featuresRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "features",
+    component: () => (
+        <div className="min-h-screen flex items-center justify-center">
+            <h1 className="text-2xl">Features page coming soon...</h1>
+        </div>
+    ),
+})
+
+const pricingRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "pricing",
+    component: () => (
+        <div className="min-h-screen flex items-center justify-center">
+            <h1 className="text-2xl">Pricing page coming soon...</h1>
+        </div>
+    ),
+})
+
+const contactRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "contact",
+    component: () => (
+        <div className="min-h-screen flex items-center justify-center">
+            <h1 className="text-2xl">Contact page coming soon...</h1>
+        </div>
+    ),
+})
+
 const routeTree = rootRoute.addChildren([
     guestRoute.addChildren([homeRoute]),
     loginRoute,
     registerRoute,
     dashboardRoute,
+    featuresRoute,
+    pricingRoute,
+    contactRoute,
 ])
 
 export const router = createRouter({ routeTree })
